@@ -1,0 +1,45 @@
+name: Apply Patch and Create PR
+
+on:
+  push:
+    paths:
+      - "feature-navigation-and-qr.patch"   # запускаем только если изменился этот файл
+
+jobs:
+  apply-patch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write       # нужно для пуша
+      pull-requests: write  # нужно для создания PR
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Apply patch and push branch
+        run: |
+          PATCH_FILE="feature-navigation-and-qr.patch"
+          BRANCH="feature/navigation-and-qr"
+
+          echo "Applying $PATCH_FILE into branch $BRANCH"
+
+          git checkout -B "$BRANCH"
+          git apply "$PATCH_FILE" || { echo "❌ Patch failed"; exit 1; }
+          git add .
+          git commit -m "feat: apply patch from $PATCH_FILE" || echo "No changes to commit"
+          git push origin "$BRANCH" --force
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: feature/navigation-and-qr
+          title: "feat: navigation buttons and CI"
+          body: |
+            This PR was automatically created from **feature-navigation-and-qr.patch**.
+          base: main

@@ -1,0 +1,22 @@
+version: "3.9"
+
+services:
+  bot:
+    build: .
+    container_name: forfriends-bot
+    restart: unless-stopped
+    env_file: .env
+    depends_on:
+      - redis
+    ports:
+      - "5000:8080"
+
+  redis:
+    image: redis:7-alpine
+    container_name: forfriends-redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+
+volumes:
+  redis_data:

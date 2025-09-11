@@ -1,0 +1,5 @@
+aiogram==3.10.0
+redis[async]==5.0.8
+aiohttp==3.9.5
+qrcode[pil]==7.4.2
+Pillow>=9.5
